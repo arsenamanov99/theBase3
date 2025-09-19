@@ -1,7 +1,7 @@
 ﻿from __future__ import annotations
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import AliasChoices, BaseModel, EmailStr, Field
 
 # ===== Lead =====
 class LeadCreate(BaseModel):
@@ -30,8 +30,9 @@ class LeadOut(BaseModel):
 
 # для POST /leads/{id}/accept совместимостью
 class AcceptIn(BaseModel):
-    accept: bool = True
-    by: Optional[str] = None
+    user: Optional[str] = Field(default=None, validation_alias=AliasChoices("user", "by"))
+
+    model_config = {"populate_by_name": True}
 
 # Пагинация: ответ /leads
 class PageLeadOut(BaseModel):

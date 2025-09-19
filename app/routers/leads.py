@@ -185,16 +185,25 @@ def export_csv(
 
 
 @router.post("/{lead_id}/accept", response_model=LeadOut)
-def accept_lead(lead_id: int, db: Session = Depends(get_db), x_api_key: str | None = Header(None)):
-    if not x_api_key:
-        raise HTTPException(status_code=401, detail="missing api key")
-    mgr = db.query(Manager).filter(Manager.api_key == x_api_key).first()
-    if not mgr:
-        raise HTTPException(status_code=401, detail="invalid api key")
+def accept_lead(
+    lead_id: int,
+    payload: AcceptIn,
+    db: Session = Depends(get_db),
+    x_api_key: str | None = Header(None),
+):
     lead = db.get(Lead, lead_id)
     if not lead:
         raise HTTPException(status_code=404, detail="lead not found")
-    lead.accept(mgr.name)
+
+    user = payload.user
+    if not user and x_api_key:
+        mgr = db.query(Manager).filter(Manager.api_key == x_api_key).first()
+        if mgr:
+            user = mgr.name
+    if not user:
+        raise HTTPException(status_code=400, detail="user is required")
+
+    lead.accept(user)
     db.commit()
     db.refresh(lead)
     return lead

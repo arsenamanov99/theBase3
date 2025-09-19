@@ -289,16 +289,83 @@
   const cartStatus = document.getElementById('cart-status');
   const cartSubmitBtn = cartForm ? cartForm.querySelector('button[type="submit"]') : null;
 
-  const modalRoot = document.getElementById('product-modal');
-  const modalDialog = modalRoot?.querySelector('.product-modal__dialog');
-  const modalBackdrop = modalRoot?.querySelector('.product-modal__backdrop');
-  const modalTitle = document.getElementById('product-modal-title');
-  const modalSubtitle = document.getElementById('product-modal-subtitle');
-  const modalFlavors = document.getElementById('product-modal-flavors');
-  const modalMessage = document.getElementById('product-modal-message');
-  const modalVariantButtons = Array.from(modalRoot?.querySelectorAll('[data-variant]') ?? []);
-  const modalCloseButtons = Array.from(modalRoot?.querySelectorAll('[data-action="close-product-modal"]') ?? []);
-  const modalQuantitySection = document.getElementById('product-modal-quantity')?.closest('.product-modal__section');
+  let modalRoot = null;
+  let modalDialog = null;
+  let modalBackdrop = null;
+  let modalTitle = null;
+  let modalSubtitle = null;
+  let modalFlavors = null;
+  let modalMessage = null;
+  let modalVariantButtons = [];
+  let modalCloseButtons = [];
+  let modalQuantitySection = null;
+  let modalHandlersBound = false;
+
+  function ensureModalElements() {
+    const root = document.getElementById('product-modal');
+    if (!root) {
+      modalRoot = null;
+      modalDialog = null;
+      modalBackdrop = null;
+      modalTitle = null;
+      modalSubtitle = null;
+      modalFlavors = null;
+      modalMessage = null;
+      modalVariantButtons = [];
+      modalCloseButtons = [];
+      modalQuantitySection = null;
+      modalHandlersBound = false;
+      return null;
+    }
+
+    if (root !== modalRoot) {
+      modalHandlersBound = false;
+    }
+
+    modalRoot = root;
+    modalDialog = modalRoot.querySelector('.product-modal__dialog');
+    modalBackdrop = modalRoot.querySelector('.product-modal__backdrop');
+    modalTitle = document.getElementById('product-modal-title');
+    modalSubtitle = document.getElementById('product-modal-subtitle');
+    modalFlavors = document.getElementById('product-modal-flavors');
+    modalMessage = document.getElementById('product-modal-message');
+    modalVariantButtons = Array.from(modalRoot.querySelectorAll('[data-variant]'));
+    modalCloseButtons = Array.from(modalRoot.querySelectorAll('[data-action="close-product-modal"]'));
+    modalQuantitySection = document.getElementById('product-modal-quantity')?.closest('.product-modal__section') || null;
+
+    if (!modalHandlersBound) {
+      modalQuantitySection?.remove();
+
+      modalBackdrop?.addEventListener('click', closeProductModal);
+      modalCloseButtons.forEach((btn) => {
+        if (!btn.dataset.modalCloseBound) {
+          btn.addEventListener('click', closeProductModal);
+          btn.dataset.modalCloseBound = 'true';
+        }
+      });
+
+      if (!modalRoot.dataset.modalPackInterceptor) {
+        modalRoot.addEventListener('click', interceptOrderPackClick, true);
+        modalRoot.dataset.modalPackInterceptor = 'true';
+      }
+
+      modalVariantButtons.forEach((button) => {
+        if (!button.dataset.modalVariantBound) {
+          if (!button.dataset.defaultLabel) {
+            button.dataset.defaultLabel = (button.textContent || '').trim();
+          }
+          button.addEventListener('click', onModalVariantButtonClick);
+          button.dataset.modalVariantBound = 'true';
+        }
+      });
+
+      modalHandlersBound = true;
+    }
+
+    return modalRoot;
+  }
+
+  ensureModalElements();
 
   // Order button temporary state helpers
   let orderBtnTimer = null;
@@ -310,7 +377,8 @@
   }
   function resetOrderBtn() {
     clearOrderBtnTimer();
-    const btn = modalRoot?.querySelector('[data-variant="pack"]');
+    const root = ensureModalElements();
+    const btn = root?.querySelector('[data-variant="pack"]');
     if (!btn) return;
     btn.classList.remove('btn-in-cart');
     btn.removeAttribute('aria-pressed');
@@ -330,77 +398,72 @@
   }
 
   // === ORDER-PACK HELPERS START ===
-let orderPackResetTimer = null;
+  let orderPackResetTimer = null;
 
-function getOrderPackBtn() {
-  return modalRoot.querySelector('[data-action="order-pack"], .js-pack-btn, .btn-primary');
-}
-
-function clearOrderPackTimer() {
-  if (orderPackResetTimer) {
-    clearTimeout(orderPackResetTimer);
-    orderPackResetTimer = null;
-  }
-}
-
-function resetOrderPackButton() {
-  clearOrderPackTimer();
-  const btn = getOrderPackBtn();
-  if (!btn) return;
-  btn.classList.remove('btn-in-cart');
-  btn.removeAttribute('aria-pressed');
-  btn.textContent = 'Заказать пачку';
-}
-
-function markInCart(btn, text) {
-  if (!btn) return;
-  clearOrderPackTimer();
-  btn.classList.add('btn-in-cart');
-  btn.setAttribute('aria-pressed', 'true');
-  btn.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✓</span>`;
-  orderPackResetTimer = setTimeout(() => { resetOrderPackButton(); }, 5000);
-}
-// === ORDER-PACK HELPERS END ===
-
-modalRoot.addEventListener('click', function (e) {
-  return; // disabled interceptor to allow normal add-to-cart flow
-  if (!btn) return;
-
-  // ловим кнопку "Заказать пачку"
-  const isOrderPack =
-    btn.matches('[data-action="order-pack"]') ||
-    /заказать пачку/i.test(btn.textContent);
-
-  if (!isOrderPack) return;
-
-  // не закрывать модалку
-  e.preventDefault();
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-
-  // добавление в корзину — подставь свою функцию/сбор вкусов
-  const flavors =
-    (typeof collectSelectedFlavors === 'function' && collectSelectedFlavors()) ||
-    (typeof getSelectedFlavors === 'function' && getSelectedFlavors()) ||
-    null;
-
-  if (typeof addPackToCart === 'function') {
-    addPackToCart(product, flavors);
+  function getOrderPackBtn() {
+    const root = ensureModalElements();
+    if (!root) {
+      return null;
+    }
+    return root.querySelector('[data-action="order-pack"], .js-pack-btn, .btn-primary');
   }
 
-  // отметить кнопку
-  markInCart(btn, 'в корзине');
-}, true); // capture: true — перехватываем до глобального закрытия
+  function clearOrderPackTimer() {
+    if (orderPackResetTimer) {
+      clearTimeout(orderPackResetTimer);
+      orderPackResetTimer = null;
+    }
+  }
 
-function markInCart(btn, text) {
-  btn.classList.add('btn-in-cart');
-  btn.setAttribute('aria-pressed', 'true');
-  btn.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✓</span>`;
-}
+  function resetOrderPackButton() {
+    clearOrderPackTimer();
+    const btn = getOrderPackBtn();
+    if (!btn) return;
+    btn.classList.remove('btn-in-cart');
+    btn.removeAttribute('aria-pressed');
+    btn.textContent = 'Заказать пачку';
+  }
+
+  function markInCart(btn, text) {
+    if (!btn) return;
+    clearOrderPackTimer();
+    btn.classList.add('btn-in-cart');
+    btn.setAttribute('aria-pressed', 'true');
+    btn.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✓</span>`;
+    orderPackResetTimer = setTimeout(() => {
+      resetOrderPackButton();
+    }, 5000);
+  }
+  // === ORDER-PACK HELPERS END ===
+
+  function interceptOrderPackClick(event) {
+    return; // disabled interceptor to allow normal add-to-cart flow
+    const target = event.target instanceof HTMLElement ? event.target.closest('button') : null;
+    if (!target) return;
+
+    const isOrderPack =
+      target.matches('[data-action="order-pack"]') ||
+      /заказать пачку/i.test((target.textContent || ''));
+
+    if (!isOrderPack) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    const flavors =
+      (typeof collectSelectedFlavors === 'function' && collectSelectedFlavors()) ||
+      (typeof getSelectedFlavors === 'function' && getSelectedFlavors()) ||
+      null;
+
+    if (typeof addPackToCart === 'function') {
+      addPackToCart(product, flavors);
+    }
+
+    markInCart(target, 'в корзине');
+  }
 
   // Continue initialisation even if some elements are missing at parse time
-
-  modalQuantitySection?.remove();
 
   const PHONE_PREFIX = '+996';
   const PHONE_RE = /^\+996\d{9}$/;
@@ -1114,7 +1177,8 @@ cartSummaryEl?.addEventListener('click', (event) => {
     if (!product) {
       return;
     }
-    if (!modalRoot) {
+    const root = ensureModalElements();
+    if (!root) {
       addToCart(product, { variant: 'pack', quantity: 1, flavors: [] });
       return;
     }
@@ -1122,8 +1186,8 @@ cartSummaryEl?.addEventListener('click', (event) => {
     // Reset order button state on each open
     resetOrderBtn();
     const hasFlavors = product.flavors.length > 0;
-    modalRoot.removeAttribute('hidden');
-    modalRoot.setAttribute('aria-hidden', 'false');
+    root.removeAttribute('hidden');
+    root.setAttribute('aria-hidden', 'false');
     document.body?.classList.add('no-scroll');
 
     if (modalMessage) {
@@ -1252,13 +1316,14 @@ sampleWrap.appendChild(sampleBtn);
   }
 
   function closeProductModal() {
-    if (!modalRoot) {
+    const root = ensureModalElements();
+    if (!root) {
       return;
     }
     clearOrderBtnTimer();
     resetOrderBtn();
-    modalRoot.setAttribute('hidden', 'hidden');
-    modalRoot.setAttribute('aria-hidden', 'true');
+    root.setAttribute('hidden', 'hidden');
+    root.setAttribute('aria-hidden', 'true');
     document.body?.classList.remove('no-scroll');
     activeProduct = null;
     if (modalMessage) {
@@ -1300,51 +1365,43 @@ sampleWrap.appendChild(sampleBtn);
     return [{ quantity: 1, flavors: [] }];
   }
 
-  modalVariantButtons.forEach((button) => {
-    // Store default label for later reset
-    if (!button.dataset.defaultLabel) {
-      button.dataset.defaultLabel = (button.textContent || '').trim();
+  function onModalVariantButtonClick(event) {
+    const button = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+    if (!button || !activeProduct) {
+      return;
     }
-    button.addEventListener('click', () => {
-      if (!activeProduct) {
-        return;
-      }
-      const variant = button.dataset.variant === 'sample' ? 'sample' : 'pack';
-      const selections = collectModalSelection();
-      if (!selections) {
-        return;
-      }
-      selections.forEach((payload) => {
-        addToCart(activeProduct, { variant, quantity: payload.quantity, flavors: payload.flavors });
-      });
-      // After adding, reset only rows that were added so they won't be re-added on the next click
-      if (variant === 'pack' && modalFlavors) {
-        selections.forEach(({ row }) => {
-          if (!row) return;
-          row.dataset.quantity = '0';
-          const qtyValue = row.querySelector('.cart-qty-value');
-          if (qtyValue) qtyValue.textContent = '0';
-          const minusBtn = row.querySelector('.cart-qty-btn'); // first btn is minus
-          if (minusBtn) minusBtn.disabled = true;
-        });
-      }
-      if (variant === 'pack') {
-        // Show temporary "in cart" state for 5s, keep modal open for further additions
-        setOrderBtnInCart(button, button.dataset.inCartLabel || 'В корзине');
-      } else {
-        closeProductModal();
-      }
+    const variant = button.dataset.variant === 'sample' ? 'sample' : 'pack';
+    const selections = collectModalSelection();
+    if (!selections) {
+      return;
+    }
+    selections.forEach((payload) => {
+      addToCart(activeProduct, { variant, quantity: payload.quantity, flavors: payload.flavors });
     });
-  });
+    if (variant === 'pack' && modalFlavors) {
+      selections.forEach(({ row }) => {
+        if (!row) return;
+        row.dataset.quantity = '0';
+        const qtyValue = row.querySelector('.cart-qty-value');
+        if (qtyValue) qtyValue.textContent = '0';
+        const minusBtn = row.querySelector('.cart-qty-btn');
+        if (minusBtn) minusBtn.disabled = true;
+      });
+    }
+    if (variant === 'pack') {
+      setOrderBtnInCart(button, button.dataset.inCartLabel || 'В корзине');
+    } else {
+      closeProductModal();
+    }
+  }
 
-  modalBackdrop?.addEventListener('click', closeProductModal);
-  modalCloseButtons.forEach((btn) => btn.addEventListener('click', closeProductModal));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       if (isCartOpen()) {
         closeCart();
       }
-      if (modalRoot && !modalRoot.hasAttribute('hidden')) {
+      const root = ensureModalElements();
+      if (root && !root.hasAttribute('hidden')) {
         closeProductModal();
       }
     }
