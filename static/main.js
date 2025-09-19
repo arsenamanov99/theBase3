@@ -707,24 +707,37 @@ saveCart();
 
 function renderChips() {
   const chipsContainer = document.getElementById('cart-chips');
-  if (!chipsContainer) {
-    return;
+    };
+  
+  function renderChips() {
+    const chipsContainer = document.getElementById('cart-chips');
+    if (!chipsContainer) {
+      return;
+    }
+    chipsContainer.innerHTML = '';
+    cart.forEach((item, key) => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      const parts = [item.name, variantLabel(item.variant)];
+      if (item.flavors.length) {
+        parts.push(item.flavors.join(', '));
+      }
+      if (item.quantity > 1) {
+        parts.push(`×${item.quantity}`);
+      }
+      chip.textContent = parts.join(SEPARATOR);
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'chip-x';
+      removeBtn.textContent = '';
+      removeBtn.setAttribute('aria-label', `Убрать ${item.name} из корзины`);
+      removeBtn.dataset.cartAction = 'remove';
+      removeBtn.dataset.cartKey = key;
+      removeBtn.addEventListener('click', () => removeFromCart(key));
+      chip.appendChild(removeBtn);
+      chipsContainer.appendChild(chip);
+    });
   }
-  chipsContainer.innerHTML = '';
-  cart.forEach((item, key) => {
-    const chip = document.createElement('span');
-    chip.className = 'chip';
-    chip.textContent = item.name;
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'chip-x';
-    removeBtn.textContent = '';
-    removeBtn.addEventListener('click', () => removeFromCart(key));
-    chip.appendChild(removeBtn);
-    chipsContainer.appendChild(chip);
-  });
-}
-
   function buildCartLine(item) {
     const parts = [variantLabel(item.variant)];
     if (item.flavors.length) {
@@ -733,7 +746,6 @@ function renderChips() {
     parts.push(`×${item.quantity}`);
     return parts.join(SEPARATOR);
   }
-
   function buildCartNote() {
     const lines = [];
     cart.forEach((item) => {
@@ -743,21 +755,7 @@ function renderChips() {
     });
     return lines.join('\n');
   }
-
   function updateCartSummary() {
-    ensureCartElements();
-    if (!cartSummaryEl) {
-      return;
-    }
-    cartSummaryEl.innerHTML = '';
-    cart.forEach((item, key) => {
-      const row = document.createElement('div');
-      row.className = 'cart-summary-item';
-      row.dataset.cartKey = key;
-
-      const header = document.createElement('div');
-      header.className = 'cart-summary-header';
-
       const title = document.createElement('span');
       title.className = 'cart-summary-title';
       title.textContent = item.name;
@@ -791,8 +789,8 @@ function renderChips() {
     row.appendChild(removeBtn);
 
     cartSummaryEl.appendChild(row);
-  });
-}
+  };
+
 
   function resetCheckoutForm(resetFields = false) {
     ensureCartElements();
