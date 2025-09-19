@@ -1043,18 +1043,30 @@
 
   if (cartItemsEl) {
     cartItemsEl.addEventListener('click', (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) {
+      const rawTarget = event.target;
+      if (!(rawTarget instanceof Element)) {
         return;
       }
-      const action = target.dataset.cartAction;
-      if (!action) {
+
+      let cursor = rawTarget;
+      let action = null;
+      let key = null;
+
+      while (cursor && cursor !== cartItemsEl) {
+        if (cursor instanceof HTMLElement && cursor.dataset) {
+          if (cursor.dataset.cartAction) {
+            action = cursor.dataset.cartAction;
+            key = cursor.dataset.cartKey || null;
+            break;
+          }
+        }
+        cursor = cursor.parentElement;
+      }
+
+      if (!action || !key) {
         return;
       }
-      const key = target.dataset.cartKey;
-      if (!key) {
-        return;
-      }
+
       event.preventDefault();
       handleCartControl(action, key);
     });
