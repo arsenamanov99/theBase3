@@ -1,0 +1,15 @@
+thebase/
+  app/
+    __init__.py
+    db.py
+    models.py
+    schemas.py
+    main.py
+    routers/
+      __init__.py
+      leads.py
+  tests/
+    test_leads.py
+  .env.example
+  requirements.txt
+  README.md

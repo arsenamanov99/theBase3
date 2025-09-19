@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.env
+# IDE
+.vscode/
+# База и временные
+leads.db
+*.log
+tmp.txt
