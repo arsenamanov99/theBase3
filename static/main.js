@@ -751,6 +751,10 @@
         minusBtn.disabled = qty <= 0;
         minusBtn.dataset.cartAction = 'decrement';
         minusBtn.dataset.cartKey = key;
+        minusBtn.addEventListener('click', (event) => {
+          event.preventDefault();
+          handleCartControl('decrement', key);
+        });
         const qtyValue = document.createElement('span');
         qtyValue.className = 'cart-qty-value';
         qtyValue.textContent = String(qty);
@@ -762,6 +766,10 @@
         plusBtn.setAttribute('aria-label', `Увеличить количество ${baseLabel}`);
         plusBtn.dataset.cartAction = 'increment';
         plusBtn.dataset.cartKey = key;
+        plusBtn.addEventListener('click', (event) => {
+          event.preventDefault();
+          handleCartControl('increment', key);
+        });
 
         controls.appendChild(minusBtn);
         controls.appendChild(qtyValue);
@@ -778,6 +786,10 @@
         removeBtn.setAttribute('aria-label', `Убрать ${baseLabel} из корзины`);
         removeBtn.dataset.cartAction = 'remove';
         removeBtn.dataset.cartKey = key;
+        removeBtn.addEventListener('click', (event) => {
+          event.preventDefault();
+          handleCartControl('remove', key);
+        });
 
         entry.appendChild(name);
         entry.appendChild(meta);
@@ -1041,36 +1053,7 @@
     }
   }
 
-  if (cartItemsEl) {
-    cartItemsEl.addEventListener('click', (event) => {
-      const rawTarget = event.target;
-      if (!(rawTarget instanceof Element)) {
-        return;
-      }
-
-      let cursor = rawTarget;
-      let action = null;
-      let key = null;
-
-      while (cursor && cursor !== cartItemsEl) {
-        if (cursor instanceof HTMLElement && cursor.dataset) {
-          if (cursor.dataset.cartAction) {
-            action = cursor.dataset.cartAction;
-            key = cursor.dataset.cartKey || null;
-            break;
-          }
-        }
-        cursor = cursor.parentElement;
-      }
-
-      if (!action || !key) {
-        return;
-      }
-
-      event.preventDefault();
-      handleCartControl(action, key);
-    });
-  }
+  /* прямые обработчики навешиваются при отрисовке */
 
   if (cartToggle) {
     cartToggle.addEventListener('click', (event) => {
