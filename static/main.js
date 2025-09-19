@@ -474,6 +474,7 @@
 
   // === ORDER-PACK HELPERS START ===
   let orderPackResetTimer = null;
+<<<<<<< ours
 
   function getOrderPackBtn() {
     const root = ensureModalElements();
@@ -510,6 +511,22 @@
       resetOrderPackButton();
     }, 5000);
 =======
+=======
+
+  function getOrderPackBtn() {
+    const root = ensureModalElements();
+    if (!root) {
+      return null;
+    }
+    return root.querySelector('[data-action="order-pack"], .js-pack-btn, .btn-primary');
+  }
+
+  function clearOrderPackTimer() {
+    if (orderPackResetTimer) {
+      clearTimeout(orderPackResetTimer);
+      orderPackResetTimer = null;
+    }
+>>>>>>> theirs
   }
 
   function resetOrderPackButton() {
@@ -519,10 +536,14 @@
     btn.classList.remove('btn-in-cart');
     btn.removeAttribute('aria-pressed');
     btn.textContent = 'Заказать пачку';
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
   }
   // === ORDER-PACK HELPERS END ===
 
+<<<<<<< ours
 <<<<<<< ours
   function interceptOrderPackClick(event) {
     return; // disabled interceptor to allow normal add-to-cart flow
@@ -561,12 +582,38 @@
       target.matches('[data-action="order-pack"]') ||
       /заказать пачку/i.test((target.textContent || ''));
 
+=======
+  function markInCart(btn, text) {
+    if (!btn) return;
+    clearOrderPackTimer();
+    btn.classList.add('btn-in-cart');
+    btn.setAttribute('aria-pressed', 'true');
+    btn.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✓</span>`;
+    orderPackResetTimer = setTimeout(() => {
+      resetOrderPackButton();
+    }, 5000);
+  }
+  // === ORDER-PACK HELPERS END ===
+
+  function interceptOrderPackClick(event) {
+    return; // disabled interceptor to allow normal add-to-cart flow
+    const target = event.target instanceof HTMLElement ? event.target.closest('button') : null;
+    if (!target) return;
+
+    const isOrderPack =
+      target.matches('[data-action="order-pack"]') ||
+      /заказать пачку/i.test((target.textContent || ''));
+
+>>>>>>> theirs
     if (!isOrderPack) return;
 
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
 
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
     const flavors =
       (typeof collectSelectedFlavors === 'function' && collectSelectedFlavors()) ||
