@@ -115,7 +115,9 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
 .chip-x:hover{background:rgba(255,255,255,.12)}
 
 /* СЃРѕСЃС‚РѕСЏРЅРёРµ РєРЅРѕРїРєРё РєР°СЂС‚РѕС‡РєРё В«СѓР¶Рµ РІ РєРѕСЂР·РёРЅРµВ» */
-.card .cta.in-cart{background:var(--accent);color:#1C1C1C;cursor:default;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.card .cta.is-in-cart{background:var(--accent);color:#1C1C1C;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+
+.is-temporary-disabled{opacity:.6;pointer-events:none;cursor:default;filter:brightness(.9) saturate(.75)}
 
 
 .bar-actions{display:flex;align-items:center;gap:18px}
