@@ -696,12 +696,20 @@ saveCart();
   function syncCardStates() {
     catalog.forEach((product) => {
       const trigger = product.trigger;
-      if (!trigger) return;
-      // Preserve temporary "in cart" state if active
-      if (trigger.classList.contains('btn-in-cart')) return;
-      trigger.classList.remove('in-cart');
-      trigger.removeAttribute('aria-disabled');
-      trigger.textContent = product.defaultLabel;
+      if (!trigger) {
+        return;
+      }
+      if (inCart.has(product.id)) {
+        trigger.textContent = product.inCartLabel;
+        trigger.classList.add('is-in-cart');
+        trigger.removeAttribute('aria-disabled');
+        trigger.style.pointerEvents = 'auto';
+      } else {
+        trigger.textContent = product.defaultLabel;
+        trigger.classList.remove('is-in-cart');
+        trigger.removeAttribute('aria-disabled');
+        trigger.style.pointerEvents = 'auto';
+      }
     });
   }
 
@@ -830,15 +838,158 @@ function renderChips() {
     } else {
       groups.forEach((entries) => {
         const groupEl = document.createElement('div');
-      groupEl.className = 'cart-item-group';
-      // You may want to continue rendering group items here
-      // (missing implementation)
-    });
-  }
-}
+        groupEl.className = 'cart-item-group';
 
-// The following logic should be inside the changeCartQuantity function.
-function changeCartQuantity(key, delta) {
+        const header = document.createElement('div');
+        header.className = 'cart-item-group__header';
+
+        const title = document.createElement('span');
+        title.className = 'cart-item-group__title';
+        title.textContent = entries[0].item.name;
+
+        const totalValue = entries.reduce((sum, entry) => {
+          const value = entry.item.totalPrice;
+          return sum + (typeof value === 'number' ? value : 0);
+        }, 0);
+        const totalEl = document.createElement('span');
+        totalEl.className = 'cart-item-group__total';
+        totalEl.textContent = totalValue > 0 ? `${totalValue.toLocaleString('ru-RU')}${CURRENCY}` : '';
+
+        header.appendChild(title);
+        header.appendChild(totalEl);
+        groupEl.appendChild(header);
+
+        const lines = document.createElement('div');
+        lines.className = 'cart-item-group__lines';
+
+        entries.forEach(({ key, item }) => {
+          const line = document.createElement('div');
+          line.className = 'cart-item-line';
+          line.dataset.cartKey = key;
+
+          const info = document.createElement('div');
+          info.className = 'cart-item-line__info';
+          info.textContent = buildCartLine(item);
+
+          const controls = document.createElement('div');
+          controls.className = 'cart-item-line__controls';
+
+          const baseLabel = item.flavors.length ? `${item.name} (${item.flavors.join(', ')})` : item.name;
+
+          const minusBtn = document.createElement('button');
+          minusBtn.type = 'button';
+          minusBtn.className = 'cart-qty-btn';
+          minusBtn.textContent = '-';
+          minusBtn.setAttribute('aria-label', `Уменьшить количество ${baseLabel}`);
+          minusBtn.disabled = item.quantity <= 0;
+          minusBtn.addEventListener('click', () => changeCartQuantity(key, -1));
+
+          const qtyValue = document.createElement('span');
+          qtyValue.className = 'cart-qty-value';
+          qtyValue.textContent = String(item.quantity);
+
+          const plusBtn = document.createElement('button');
+          plusBtn.type = 'button';
+          plusBtn.className = 'cart-qty-btn';
+          plusBtn.textContent = '+';
+          plusBtn.setAttribute('aria-label', `Увеличить количество ${baseLabel}`);
+          plusBtn.addEventListener('click', () => changeCartQuantity(key, 1));
+
+          controls.appendChild(minusBtn);
+          controls.appendChild(qtyValue);
+          controls.appendChild(plusBtn);
+
+          const price = document.createElement('div');
+          price.className = 'cart-item-line__price';
+          price.textContent = formatPrice(item.totalPrice);
+
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'cart-item-remove';
+          removeBtn.textContent = '×';
+          removeBtn.setAttribute('aria-label', `Убрать ${baseLabel} из корзины`);
+          removeBtn.addEventListener('click', () => removeFromCart(key));
+
+          line.appendChild(info);
+          line.appendChild(controls);
+          line.appendChild(price);
+          line.appendChild(removeBtn);
+
+          lines.appendChild(line);
+        });
+
+        groupEl.appendChild(lines);
+        cartItemsEl.appendChild(groupEl);
+      });
+    }
+
+    const totalCount = Array.from(cart.values()).reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = Array.from(cart.values()).reduce((sum, item) => {
+      const value = item.totalPrice;
+      return sum + (typeof value === 'number' ? value : 0);
+    }, 0);
+
+    if (cartCountEl) {
+      cartCountEl.textContent = String(totalCount);
+    }
+    if (cartToggle) {
+      cartToggle.classList.toggle('has-items', totalCount > 0);
+      cartToggle.setAttribute('aria-expanded', String(isCartOpen()));
+    }
+    if (cartTotalEl) {
+      cartTotalEl.textContent = totalPrice > 0 ? `${totalPrice.toLocaleString('ru-RU')}${CURRENCY}` : '—';
+    }
+
+    if (cartSubmitBtn) {
+      cartSubmitBtn.disabled = cart.size === 0;
+    }
+
+    if (cartForm) {
+      if (cart.size > 0) {
+        cartForm.removeAttribute('hidden');
+        updateCartSummary();
+        if (cartPhoneInput && !cartPhoneInput.value) {
+          cartPhoneInput.value = PHONE_PREFIX;
+        }
+      } else {
+        cartForm.setAttribute('hidden', 'hidden');
+        resetCheckoutForm(true);
+      }
+    }
+
+    syncCardStates();
+    syncModalStates();
+  }
+
+  function addToCart(product, payload) {
+    const flavors = payload.flavors.slice().sort();
+    const key = cartKey(product.id, payload.variant, flavors);
+    const pricePerUnit = payload.variant === 'sample' ? product.samplePrice : product.packPrice;
+
+    if (cart.has(key)) {
+      const existing = cart.get(key);
+      existing.quantity += payload.quantity;
+      existing.totalPrice = typeof pricePerUnit === 'number' ? existing.quantity * pricePerUnit : null;
+      cart.set(key, existing);
+    } else {
+      cart.set(key, {
+        key,
+        productId: product.id,
+        name: product.name,
+        variant: payload.variant,
+        flavors,
+        quantity: payload.quantity,
+        pricePerUnit: typeof pricePerUnit === 'number' ? pricePerUnit : null,
+        totalPrice: typeof pricePerUnit === 'number' ? pricePerUnit * payload.quantity : null,
+      });
+    }
+
+    renderCart();
+    openCart();
+    showCartStatus('Добавили набор в корзину.');
+  }
+
+  function changeCartQuantity(key, delta) {
     const item = cart.get(key);
     if (!item) {
       return;

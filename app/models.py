@@ -34,6 +34,8 @@ class Lead(Base):
         self.accepted_by = None
         self.accepted_at = None
         self._touch()
+__tablename__ = "leads"
+__table_args__ = {"extend_existing": True}
 
 class Manager(Base):
     __tablename__ = "managers"
