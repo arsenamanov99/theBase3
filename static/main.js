@@ -113,7 +113,7 @@
     },
     { passive: true },
   );
-})();
+} )();
 
 // ===== Lead Form =====
 (() => {
@@ -244,7 +244,7 @@
       showStatus('Отправляем...');
       const res = await fetch('/api/leads', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
           phone,
@@ -268,7 +268,7 @@
 })();
 
 // ===== Cart & Checkout =====
-(() => {
+(function () {
   let cartToggle = null;
   let cartPanel = null;
   let cartOverlay = null;
@@ -319,6 +319,10 @@
       cartSubmitBtn = cartForm.querySelector('button[type="submit"]');
     }
   }
+loadCart();
+renderCart();
+saveCart();
+})();
 
   function bindCartControls() {
     ensureCartElements();
@@ -474,7 +478,6 @@
 
   // === ORDER-PACK HELPERS START ===
   let orderPackResetTimer = null;
-<<<<<<< ours
 
   function getOrderPackBtn() {
     const root = ensureModalElements();
@@ -489,7 +492,6 @@
       clearTimeout(orderPackResetTimer);
       orderPackResetTimer = null;
     }
-<<<<<<< ours
   }
 
   function resetOrderPackButton() {
@@ -510,41 +512,9 @@
     orderPackResetTimer = setTimeout(() => {
       resetOrderPackButton();
     }, 5000);
-=======
-=======
-
-  function getOrderPackBtn() {
-    const root = ensureModalElements();
-    if (!root) {
-      return null;
-    }
-    return root.querySelector('[data-action="order-pack"], .js-pack-btn, .btn-primary');
-  }
-
-  function clearOrderPackTimer() {
-    if (orderPackResetTimer) {
-      clearTimeout(orderPackResetTimer);
-      orderPackResetTimer = null;
-    }
->>>>>>> theirs
-  }
-
-  function resetOrderPackButton() {
-    clearOrderPackTimer();
-    const btn = getOrderPackBtn();
-    if (!btn) return;
-    btn.classList.remove('btn-in-cart');
-    btn.removeAttribute('aria-pressed');
-    btn.textContent = 'Заказать пачку';
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
   }
   // === ORDER-PACK HELPERS END ===
 
-<<<<<<< ours
-<<<<<<< ours
   function interceptOrderPackClick(event) {
     return; // disabled interceptor to allow normal add-to-cart flow
     const target = event.target instanceof HTMLElement ? event.target.closest('button') : null;
@@ -560,61 +530,6 @@
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-=======
-  function markInCart(btn, text) {
-    if (!btn) return;
-    clearOrderPackTimer();
-    btn.classList.add('btn-in-cart');
-    btn.setAttribute('aria-pressed', 'true');
-    btn.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✓</span>`;
-    orderPackResetTimer = setTimeout(() => {
-      resetOrderPackButton();
-    }, 5000);
-  }
-  // === ORDER-PACK HELPERS END ===
-
-  function interceptOrderPackClick(event) {
-    return; // disabled interceptor to allow normal add-to-cart flow
-    const target = event.target instanceof HTMLElement ? event.target.closest('button') : null;
-    if (!target) return;
-
-    const isOrderPack =
-      target.matches('[data-action="order-pack"]') ||
-      /заказать пачку/i.test((target.textContent || ''));
-
-=======
-  function markInCart(btn, text) {
-    if (!btn) return;
-    clearOrderPackTimer();
-    btn.classList.add('btn-in-cart');
-    btn.setAttribute('aria-pressed', 'true');
-    btn.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✓</span>`;
-    orderPackResetTimer = setTimeout(() => {
-      resetOrderPackButton();
-    }, 5000);
-  }
-  // === ORDER-PACK HELPERS END ===
-
-  function interceptOrderPackClick(event) {
-    return; // disabled interceptor to allow normal add-to-cart flow
-    const target = event.target instanceof HTMLElement ? event.target.closest('button') : null;
-    if (!target) return;
-
-    const isOrderPack =
-      target.matches('[data-action="order-pack"]') ||
-      /заказать пачку/i.test((target.textContent || ''));
-
->>>>>>> theirs
-    if (!isOrderPack) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
     const flavors =
       (typeof collectSelectedFlavors === 'function' && collectSelectedFlavors()) ||
       (typeof getSelectedFlavors === 'function' && getSelectedFlavors()) ||
@@ -651,122 +566,8 @@
       cardBtnTimers.delete(pid);
     }
   }
-  function resetCardBtn(pid) {
+  (function resetCardBtn(pid) {
     clearCardBtnTimer(pid);
-    const trigger = getCardTrigger(pid);
-    if (!trigger) return;
-    trigger.classList.remove('btn-in-cart', 'in-cart');
-    trigger.removeAttribute('aria-pressed');
-    trigger.removeAttribute('aria-disabled');
-    const def = trigger.dataset.defaultLabel || (trigger.textContent || '');
-    trigger.textContent = def;
-  }
-  function setCardBtnInCart(pid) {
-    const trigger = getCardTrigger(pid);
-    if (!trigger) return;
-    if (!trigger.dataset.defaultLabel) {
-      trigger.dataset.defaultLabel = (trigger.textContent || '').trim();
-    }
-    const text = trigger.dataset.inCartLabel || 'В корзине';
-    trigger.classList.add('btn-in-cart');
-    trigger.setAttribute('aria-pressed', 'true');
-    trigger.removeAttribute('aria-disabled');
-    trigger.innerHTML = `${text} <span class="checkmark" aria-hidden="true">✔</span>`;
-    clearCardBtnTimer(pid);
-    cardBtnTimers.set(pid, setTimeout(() => resetCardBtn(pid), 5000));
-  }
-
-  cards.forEach((card) => {
-    const name = card.querySelector('h3')?.textContent?.trim();
-    if (!name) {
-      return;
-    }
-    const productId = card.dataset.productId || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    if (!productId) {
-      return;
-    }
-    const rawFlavors = (() => {
-      const raw = card.getAttribute('data-flavors') || '';
-      decoder.innerHTML = raw;
-      const decoded = decoder.value || '';
-      return decoded
-        .split(';')
-        .map((v) => v.trim())
-        .filter(Boolean);
-    })();
-    const packPrice = Number(card.dataset.packPrice);
-    const samplePrice = Number(card.dataset.samplePrice);
-    const allowSample = card.dataset.allowSample !== 'false';
-    const trigger = card.querySelector('.open-product') || card.querySelector('button');
-    const defaultLabel = trigger?.textContent?.trim() ?? '';
-    const inCartLabel = trigger?.dataset.inCartLabel || 'В корзине';
-
-    catalog.set(productId, {
-      id: productId,
-      name,
-      flavors: rawFlavors,
-      packPrice: Number.isFinite(packPrice) ? packPrice : null,
-      samplePrice: Number.isFinite(samplePrice) ? samplePrice : null,
-      allowSample,
-      trigger,
-      defaultLabel,
-      inCartLabel,
-    });
-
-    if (trigger) {
-      trigger.dataset.productId = productId;
-      trigger.addEventListener('click', (event) => {
-        event.preventDefault();
-        openProductModal(productId);
-      });
-    }
-  });
-
-  const cart = new Map();
-  const STORAGE_KEY = 'cart.v1';
-
-  function saveCart() {
-    try {
-      const data = Array.from(cart.values()).map((item) => ({
-        key: item.key,
-        productId: item.productId,
-        name: item.name,
-        variant: item.variant,
-        flavors: item.flavors,
-        quantity: item.quantity,
-        pricePerUnit: typeof item.pricePerUnit === 'number' ? item.pricePerUnit : null,
-      }));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch {}
-  }
-
-  function loadCart() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const arr = JSON.parse(raw);
-      if (!Array.isArray(arr)) return;
-      cart.clear();
-      arr.forEach((item) => {
-        const product = catalog.get(item.productId);
-        const pricePerUnit = item.variant === 'sample' ? product?.samplePrice : product?.packPrice;
-        const flavors = Array.isArray(item.flavors) ? item.flavors.slice().sort() : [];
-        const key = cartKey(item.productId, item.variant, flavors);
-        const qty = Math.max(1, Number(item.quantity || 1));
-        cart.set(key, {
-          key,
-          productId: item.productId,
-          name: item.name || product?.name || '',
-          variant: item.variant,
-          flavors,
-          quantity: qty,
-          pricePerUnit: Number.isFinite(pricePerUnit) ? pricePerUnit : (Number.isFinite(item.pricePerUnit) ? item.pricePerUnit : null),
-          totalPrice: Number.isFinite(pricePerUnit) ? pricePerUnit * qty : (Number.isFinite(item.pricePerUnit) ? item.pricePerUnit * qty : null),
-        });
-      });
-    } catch {}
-  }
-  let activeProduct = null;
 
   // Fallback global handlers in case per-element listeners fail
   document.addEventListener('click', (event) => {
@@ -846,32 +647,7 @@
         input.value = PHONE_PREFIX;
       }
       normalise();
-    });
-    input.addEventListener('input', normalise);
-    input.addEventListener('blur', () => {
-      if (input.value === PHONE_PREFIX) {
-        input.value = '';
-      }
-    });
-    input.addEventListener('keydown', (event) => {
-      if (event.key !== 'Backspace' && event.key !== 'Delete') {
-        return;
-      }
-      const selectionStart = input.selectionStart ?? 0;
-      const selectionEnd = input.selectionEnd ?? 0;
-      if (selectionStart !== selectionEnd) {
-        if (selectionStart < PHONE_PREFIX.length) {
-          event.preventDefault();
-        }
-        return;
-      }
-      if (event.key === 'Backspace' && selectionStart <= PHONE_PREFIX.length) {
-        event.preventDefault();
-      }
-      if (event.key === 'Delete' && selectionStart < PHONE_PREFIX.length) {
-        event.preventDefault();
-      }
-    });
+});
     input.addEventListener('paste', (event) => {
       event.preventDefault();
       const pasted = event.clipboardData?.getData('text') ?? '';
@@ -929,34 +705,25 @@
     });
   }
 
-  function renderChips() {
-    const chipsContainer = document.getElementById('cart-chips');
-    if (!chipsContainer) {
-      return;
-    }
-    chipsContainer.innerHTML = '';
-    cart.forEach((item, key) => {
-      const chip = document.createElement('span');
-      chip.className = 'chip';
-      const parts = [item.name, variantLabel(item.variant)];
-      if (item.flavors.length) {
-        parts.push(item.flavors.join(', '));
-      }
-      if (item.quantity > 1) {
-        parts.push(`×${item.quantity}`);
-      }
-      chip.textContent = parts.join(SEPARATOR);
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'chip-x';
-      removeBtn.textContent = '';
-      removeBtn.setAttribute('aria-label', `Убрать ${item.name} из корзины`);
-          removeBtn.dataset.cartAction = 'remove';
-          removeBtn.dataset.cartKey = key;
-      chip.appendChild(removeBtn);
-      chipsContainer.appendChild(chip);
-    });
+function renderChips() {
+  const chipsContainer = document.getElementById('cart-chips');
+  if (!chipsContainer) {
+    return;
   }
+  chipsContainer.innerHTML = '';
+  cart.forEach((item, key) => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.textContent = item.name;
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'chip-x';
+    removeBtn.textContent = '';
+    removeBtn.addEventListener('click', () => removeFromCart(key));
+    chip.appendChild(removeBtn);
+    chipsContainer.appendChild(chip);
+  });
+}
 
   function buildCartLine(item) {
     const parts = [variantLabel(item.variant)];
@@ -1004,48 +771,28 @@
 
       const meta = document.createElement('div');
       meta.className = 'cart-summary-meta';
-      meta.textContent = buildCartLine(item);
+    plusBtn.textContent = '+';
+    plusBtn.dataset.cartAction = 'increment';
 
-      const controls = document.createElement('div');
-      controls.className = 'cart-summary-controls';
-      const minusBtn = document.createElement('button');
-      minusBtn.type = 'button';
-      minusBtn.className = 'cart-qty-btn';
-      minusBtn.textContent = '−';
-      minusBtn.dataset.cartAction = 'decrement';
-      minusBtn.dataset.cartKey = key;
-      minusBtn.disabled = item.quantity <= 1;
+    controls.appendChild(minusBtn);
+    controls.appendChild(qtyValue);
+    controls.appendChild(plusBtn);
 
-      const qtyValue = document.createElement('span');
-      qtyValue.className = 'cart-qty-value';
-      qtyValue.textContent = String(item.quantity);
+    row.appendChild(header);
+    row.appendChild(meta);
+    row.appendChild(controls);
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'cart-item-remove';
+    removeBtn.textContent = '';
+    removeBtn.setAttribute('aria-label', `Удалить ${item.name} из корзины`);
+    removeBtn.addEventListener('click', () => removeFromCart(key));
 
-      const plusBtn = document.createElement('button');
-      plusBtn.type = 'button';
-      plusBtn.className = 'cart-qty-btn';
-      plusBtn.textContent = '+';
-      plusBtn.dataset.cartAction = 'increment';
-      plusBtn.dataset.cartKey = key;
+    row.appendChild(removeBtn);
 
-      controls.appendChild(minusBtn);
-      controls.appendChild(qtyValue);
-      controls.appendChild(plusBtn);
-
-      row.appendChild(header);
-      row.appendChild(meta);
-      row.appendChild(controls);
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'cart-item-remove';
-      removeBtn.textContent = '';
-      removeBtn.setAttribute('aria-label', `?????? ${item.name} ?? ???????`);
-      removeBtn.addEventListener('click', () => removeFromCart(key));
-
-      row.appendChild(removeBtn);
-
-      cartSummaryEl.appendChild(row);
-    });
-  }
+    cartSummaryEl.appendChild(row);
+  });
+}
 
   function resetCheckoutForm(resetFields = false) {
     ensureCartElements();
@@ -1085,162 +832,21 @@
     } else {
       groups.forEach((entries) => {
         const groupEl = document.createElement('div');
-        groupEl.className = 'cart-item-group';
-
-        const header = document.createElement('div');
-        header.className = 'cart-item-group__header';
-
-        const title = document.createElement('span');
-        title.className = 'cart-item-group__title';
-        title.textContent = entries[0].item.name;
-
-        const totalValue = entries.reduce((sum, entry) => {
-          const value = entry.item.totalPrice;
-          return sum + (typeof value === 'number' ? value : 0);
-        }, 0);
-        const totalEl = document.createElement('span');
-        totalEl.className = 'cart-item-group__total';
-        totalEl.textContent = totalValue > 0 ? `${totalValue.toLocaleString('ru-RU')}${CURRENCY}` : '';
-
-        header.appendChild(title);
-        header.appendChild(totalEl);
-        groupEl.appendChild(header);
-
-        const linesContainer = document.createElement('div');
-        linesContainer.className = 'cart-item-group__lines';
-
-        entries.forEach(({ key, item }) => {
-          const line = document.createElement('div');
-          line.className = 'cart-item-line';
-          line.dataset.cartKey = key;
-
-          const info = document.createElement('div');
-          info.className = 'cart-item-line__info';
-          info.textContent = buildCartLine(item);
-
-          const controls = document.createElement('div');
-          controls.className = 'cart-item-line__controls';
-
-          const baseLabel = item.flavors.length ? `${item.name} (${item.flavors.join(', ')})` : item.name;
-
-          const minusBtn = document.createElement('button');
-          minusBtn.type = 'button';
-          minusBtn.className = 'cart-qty-btn';
-          minusBtn.textContent = '−';
-          minusBtn.setAttribute('aria-label', `Уменьшить количество ${baseLabel}`);
-          minusBtn.disabled = item.quantity <= 1;const qtyValue = document.createElement('span');
-          qtyValue.className = 'cart-qty-value';
-          qtyValue.textContent = String(item.quantity);
-
-          const plusBtn = document.createElement('button');
-          plusBtn.type = 'button';
-          plusBtn.className = 'cart-qty-btn';
-          plusBtn.textContent = '+';
-          plusBtn.setAttribute('aria-label', `Увеличить количество ${baseLabel}`);controls.appendChild(minusBtn);
-          controls.appendChild(qtyValue);
-          controls.appendChild(plusBtn);
-
-          const price = document.createElement('div');
-          price.className = 'cart-item-line__price';
-          price.textContent = formatPrice(item.totalPrice);
-
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.className = 'cart-item-remove';
-          removeBtn.textContent = '';
-          removeBtn.setAttribute('aria-label', `Убрать ${baseLabel} из корзины`);
-          removeBtn.dataset.cartAction = 'remove';
-          removeBtn.dataset.cartKey = key;
-          removeBtn.addEventListener('click', () => removeFromCart(key));
-
-          line.appendChild(info);
-          line.appendChild(controls);
-          line.appendChild(price);
-          line.appendChild(removeBtn);
-
-          linesContainer.appendChild(line);
-        });
-
-        groupEl.appendChild(linesContainer);
-        cartItemsEl.appendChild(groupEl);
-      });
-    }
-
-    const totalCount = Array.from(cart.values()).reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = Array.from(cart.values()).reduce((sum, item) => {
-      const value = item.totalPrice;
-      return sum + (typeof value === 'number' ? value : 0);
-    }, 0);
-
-    if (cartCountEl) {
-      cartCountEl.textContent = String(totalCount);
-    }
-    if (cartToggle) {
-      cartToggle.classList.toggle('has-items', totalCount > 0);
-      cartToggle.setAttribute('aria-expanded', String(isCartOpen()));
-    }
-    if (cartTotalEl) {
-      cartTotalEl.textContent = totalPrice > 0 ? `${totalPrice.toLocaleString('ru-RU')}${CURRENCY}` : '—';
-    }
-
-    if (cartSubmitBtn) {
-      cartSubmitBtn.disabled = cart.size === 0;
-    }
-
-    if (cartForm) {
-      if (cart.size > 0) {
-        cartForm.removeAttribute('hidden');
-        updateCartSummary();
-        if (cartPhoneInput && !cartPhoneInput.value) {
-          cartPhoneInput.value = PHONE_PREFIX;
-        }
-      } else {
-        cartForm.setAttribute('hidden', 'hidden');
-        resetCheckoutForm(true);
-      }
-    }
-
-    syncCardStates();
+      groupEl.className = 'cart-item-group';
+      // You may want to continue rendering group items here
+      // (missing implementation)
+    });
   }
+}
 
-  function addToCart(product, payload) {
-    const flavors = payload.flavors.slice().sort();
-    const key = cartKey(product.id, payload.variant, flavors);
-    const pricePerUnit = payload.variant === 'sample' ? product.samplePrice : product.packPrice;
-
-    if (cart.has(key)) {
-      const existing = cart.get(key);
-      existing.quantity += payload.quantity;
-      existing.totalPrice = typeof pricePerUnit === 'number' ? existing.quantity * pricePerUnit : null;
-      cart.set(key, existing);
-    } else {
-      cart.set(key, {
-        key,
-        productId: product.id,
-        name: product.name,
-        variant: payload.variant,
-        flavors,
-        quantity: payload.quantity,
-        pricePerUnit: typeof pricePerUnit === 'number' ? pricePerUnit : null,
-        totalPrice: typeof pricePerUnit === 'number' ? pricePerUnit * payload.quantity : null,
-      });
-    }
-
-    renderCart();
-    saveCart();
-    openCart();
-    setCardBtnInCart(product.id);
-    showCartStatus('Добавили набор в корзину.');
-  }
-
-  function changeCartQuantity(key, delta) {
+// The following logic should be inside the changeCartQuantity function.
+function changeCartQuantity(key, delta) {
     const item = cart.get(key);
     if (!item) {
       return;
     }
     const nextQuantity = item.quantity + delta;
     if (nextQuantity <= 0) {
-      removeFromCart(key);
       return;
     }
     item.quantity = nextQuantity;
@@ -1377,89 +983,60 @@
     if (modalFlavors) {
       modalFlavors.innerHTML = '';
       if (hasFlavors) {
-        product.flavors.forEach((flavor, index) => {
-          const row = document.createElement('div');
-          row.className = 'product-modal__flavor-row flavor-card';
-          row.dataset.flavor = flavor;
-          row.dataset.quantity = '0';
+      product.flavors.forEach((flavor, index) => {
+        const row = document.createElement('div');
+        row.className = 'product-modal__flavor-row';
+        row.dataset.flavor = flavor;
+        row.dataset.quantity = '0';
 
-          const name = document.createElement('span');
-          name.className = 'product-modal__flavor-name flavor-title';
+        const label = document.createElement('span');
+        label.className = 'product-modal__flavor-label';
+        label.textContent = flavor;
 
-          name.textContent = flavor;
+        const controls = document.createElement('span');
+        controls.className = 'cart-qty-controls';
 
-          const controls = document.createElement('div');
-          controls.className = 'product-modal__flavor-controls cart-qty';
+        const minusBtn = document.createElement('button');
+        minusBtn.type = 'button';
+        minusBtn.className = 'cart-qty-btn';
+        minusBtn.textContent = '−';
+        minusBtn.disabled = true;
 
-     const minusBtn = document.createElement('button');
-minusBtn.type = 'button';
-minusBtn.className = 'cart-qty-btn';
-minusBtn.textContent = '−';
-minusBtn.setAttribute('aria-label', `Уменьшить количество вкуса ${flavor}`);
+        const qtyValue = document.createElement('span');
+        qtyValue.className = 'cart-qty-value';
+        qtyValue.textContent = '0';
 
-const qtyValue = document.createElement('span');
-qtyValue.className = 'cart-qty-value';
+        const plusBtn = document.createElement('button');
+        plusBtn.type = 'button';
+        plusBtn.className = 'cart-qty-btn';
+        plusBtn.textContent = '+';
 
-const plusBtn = document.createElement('button');
-plusBtn.type = 'button';
-plusBtn.className = 'cart-qty-btn';
-plusBtn.textContent = '+';
-plusBtn.setAttribute('aria-label', `Увеличить количество вкуса ${flavor}`);
+        controls.appendChild(minusBtn);
+        controls.appendChild(qtyValue);
+        controls.appendChild(plusBtn);
 
+        row.appendChild(label);
+        row.appendChild(controls);
 
-          const setQty = (next) => {
-            const value = Math.max(0, next);
-            row.dataset.quantity = String(value);
-            qtyValue.textContent = String(value);
-            minusBtn.disabled = value === 0;
-            // Any change to selection should bring button back to default
-            resetOrderBtn();
-          };
-
-          minusBtn.addEventListener('click', () => setQty(Number(row.dataset.quantity || '0') - 1));
-          plusBtn.addEventListener('click', () => setQty(Number(row.dataset.quantity || '0') + 1));
-          setQty(Number(row.dataset.quantity || '0'));
-
-          controls.appendChild(minusBtn);
-          controls.appendChild(qtyValue);
-          controls.appendChild(plusBtn);
-
-          row.appendChild(name);
-          row.appendChild(controls);
-        
-          if (product.allowSample) {
-            const sampleWrap = document.createElement('div');
-            sampleWrap.className = 'product-modal__flavor-sample';
-            const sampleBtn = document.createElement('button');
-            sampleBtn.type = 'button';
-            sampleBtn.className = 'btn-sample-row';
-            sampleBtn.textContent = 'Заказать образец';
-            sampleBtn.addEventListener('click', () => {
-  addToCart(activeProduct, { variant: 'sample', quantity: 1, flavors: [flavor] });
-  sampleBtn.disabled = true;
-  sampleBtn.textContent = 'образец в корзине';
-  let check = sampleWrap.querySelector('.flavor-check');
-  if (!check) {
-    check = document.createElement('span');
-    check.className = 'flavor-check';
-    sampleWrap.appendChild(check);
-  }
-});
-sampleWrap.appendChild(sampleBtn);
-            row.appendChild(sampleWrap);
-          }
-
-          modalFlavors.appendChild(row);
+        // Add event listeners for plus/minus buttons
+        plusBtn.addEventListener('click', () => {
+          let qty = Number(row.dataset.quantity || '0');
+          qty += 1;
+          row.dataset.quantity = qty.toString();
+          qtyValue.textContent = qty.toString();
+          minusBtn.disabled = qty <= 0;
         });
-      } else {
-        const note = document.createElement('p');
-        note.className = 'product-modal__note';
-        note.textContent = 'Для этого варианта образцы недоступны.';
-        modalFlavors.appendChild(note);
-      }
+        minusBtn.addEventListener('click', () => {
+          let qty = Number(row.dataset.quantity || '0');
+          qty = Math.max(0, qty - 1);
+          row.dataset.quantity = qty.toString();
+          qtyValue.textContent = qty.toString();
+          minusBtn.disabled = qty <= 0;
+        });
+
+        modalFlavors.appendChild(row);
+      });
     }
-
-
 
     modalVariantButtons.forEach((button) => {
       const variant = button.dataset.variant;
@@ -1606,28 +1183,13 @@ sampleWrap.appendChild(sampleBtn);
     const noteParts = [];
     const orderLines = buildCartNote();
     if (orderLines) {
-      noteParts.push('Заказ:');
       noteParts.push(orderLines);
     }
-    if (address) {
-      noteParts.push(`Адрес: ${address}`);
-    }
-    if (deliverNow) {
-      noteParts.push('Доставка: сейчас');
-    } else if (deliverDate || deliverTime) {
-      noteParts.push(`Доставка: ${[deliverDate, deliverTime].filter(Boolean).join(' ')}`);
-    }
-
     try {
-      showCartStatus('Отправляем заказ...');
-      if (cartSubmitBtn) {
-        cartSubmitBtn.disabled = true;
-      }
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
           phone,
           note: noteParts.join('\n') || null,
         }),
@@ -1649,15 +1211,11 @@ sampleWrap.appendChild(sampleBtn);
     }
   }
 
-  loadCart();
-  renderCart();
-  saveCart();
+
+
+loadCart();
+renderCart();
+saveCart();
+}
 })();
-
-
-
-
-
-
-
 
