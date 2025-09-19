@@ -7,3 +7,6 @@ __pycache__/
 leads.db
 *.log
 tmp.txt
+
+static/*.utf8
+*.bak
