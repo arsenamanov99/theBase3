@@ -252,7 +252,10 @@
       return qty > 1 ? `${name} × ${qty}` : name;
     });
 <<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
 
     const payload = { name, phone, place: place || null, msg: msg || null, products };
 
@@ -262,6 +265,9 @@
       finalizeSubmission('Демо-режим: данные формы собраны.');
       return;
     }
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
     try{
@@ -282,6 +288,7 @@
         return;
       }
 <<<<<<< ours
+<<<<<<< ours
       if (status) status.textContent = 'Готово. Мы свяжемся с вами.';
       form.reset();
       // очистить корзину
@@ -290,6 +297,11 @@
       renderChips();
       names.forEach(n => markCard(n, 0));
     }catch{
+=======
+      finalizeSubmission();
+    }catch(err){
+      console.info('THEBASE lead (ошибка сети):', payload, err);
+>>>>>>> theirs
 =======
       finalizeSubmission();
     }catch(err){
