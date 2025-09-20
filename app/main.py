@@ -3,6 +3,7 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import logging
 
 from app.db import Base, Engine
 from app.models import Lead, Manager  # важно импортировать модели до create_all
@@ -47,5 +48,15 @@ app.include_router(telegram_router.router)
 # --- статика ---
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/", StaticFiles(directory="static", html=True), name="root")
+
+
+logger = logging.getLogger("uvicorn.error")
+
+
+@app.on_event("startup")
+async def announce_local_url() -> None:
+    logger.info(
+        "TheBase UI is available at http://127.0.0.1:8000/ — open localhost instead of 0.0.0.0 in your browser."
+    )
 
 
