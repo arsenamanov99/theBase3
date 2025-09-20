@@ -250,6 +250,9 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -262,7 +265,10 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -281,11 +287,14 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 >>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
     const products = [...chosen];
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -309,6 +318,7 @@
         if (status) status.textContent = `Ошибка: ${err.error || err.detail || res.status}`;
         return;
       }
+<<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
@@ -339,6 +349,11 @@
       [...chosen].forEach(n => markCard(n, false));
       chosen.clear(); renderChips();
     }catch{
+>>>>>>> theirs
+=======
+      finalizeSubmission();
+    }catch(err){
+      console.info('THEBASE lead (ошибка сети):', payload, err);
 >>>>>>> theirs
 =======
       finalizeSubmission();
