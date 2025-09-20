@@ -1,4 +1,4 @@
-// ===== Анимация чашек (центр под словом "Бишкек") =====
+﻿// ===== Анимация чашек (центр под словом "Бишкек") =====
 (() => {
   const lane = document.querySelector('.lane');
   const path = document.querySelector('.path');
@@ -742,11 +742,13 @@
 
         const controls = document.createElement('div');
         controls.className = 'cart-item-qty';
+        controls.setAttribute('role', 'group');
+        controls.setAttribute('aria-label', `Количество ${baseLabel}`);
 
         const minusBtn = document.createElement('button');
         minusBtn.type = 'button';
         minusBtn.className = 'cart-qty-btn';
-        minusBtn.textContent = '-';
+        minusBtn.textContent = '−';
         minusBtn.setAttribute('aria-label', `Уменьшить количество ${baseLabel}`);
         minusBtn.disabled = qty <= 0;
         minusBtn.dataset.cartAction = 'decrement';
