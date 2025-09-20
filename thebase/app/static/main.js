@@ -181,6 +181,7 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 =======
 >>>>>>> theirs
 =======
@@ -281,6 +282,9 @@
 =======
     const products = [...chosen];
 >>>>>>> theirs
+=======
+    const products = [...chosen];
+>>>>>>> theirs
 
     try{
       if (status) status.textContent = 'Отправляем...';
@@ -294,6 +298,7 @@
         if (status) status.textContent = `Ошибка: ${err.error || err.detail || res.status}`;
         return;
       }
+<<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
@@ -328,12 +333,15 @@
 =======
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
       if (status) status.textContent = 'Готово. Мы свяжемся с вами.';
       form.reset();
       // очистить корзину
       [...chosen].forEach(n => markCard(n, false));
       chosen.clear(); renderChips();
     }catch{
+<<<<<<< ours
 <<<<<<< ours
 >>>>>>> theirs
 =======
@@ -380,6 +388,8 @@
       finalizeSubmission();
     }catch(err){
       console.info('THEBASE lead (ошибка сети):', payload, err);
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
