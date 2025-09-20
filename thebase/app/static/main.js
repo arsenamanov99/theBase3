@@ -220,6 +220,17 @@
     });
   });
 
+  const finalizeSubmission = (message = 'Готово. Мы свяжемся с вами.') => {
+    if (status) status.textContent = message;
+    form.reset();
+    const names = Array.from(chosen.keys());
+    chosen.clear();
+    renderChips();
+    names.forEach(n => markCard(n, 0));
+  };
+
+  const isStaticDemo = window.location.protocol === 'file:';
+
   // отправка формы
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -240,19 +251,37 @@
       const qty = Number(info?.quantity || 0);
       return qty > 1 ? `${name} × ${qty}` : name;
     });
+<<<<<<< ours
+=======
+
+    const payload = { name, phone, place: place || null, msg: msg || null, products };
+
+    if (isStaticDemo){
+      if (status) status.textContent = 'Демо-режим: заявка не отправляется, но данные записаны в консоль.';
+      console.info('THEBASE lead (demo mode):', payload);
+      finalizeSubmission('Демо-режим: данные формы собраны.');
+      return;
+    }
+>>>>>>> theirs
 
     try{
       if (status) status.textContent = 'Отправляем...';
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ name, phone, place: place || null, msg: msg || null, products })
+        body: JSON.stringify(payload)
       });
       if (!res.ok){
         const err = await res.json().catch(()=>({}));
+        if (res.status === 404){
+          console.info('THEBASE lead (backend недоступен, данные в консоли):', payload);
+          finalizeSubmission('Сервер заявок не запущен. Данные сохранены в консоли.');
+          return;
+        }
         if (status) status.textContent = `Ошибка: ${err.error || err.detail || res.status}`;
         return;
       }
+<<<<<<< ours
       if (status) status.textContent = 'Готово. Мы свяжемся с вами.';
       form.reset();
       // очистить корзину
@@ -261,6 +290,11 @@
       renderChips();
       names.forEach(n => markCard(n, 0));
     }catch{
+=======
+      finalizeSubmission();
+    }catch(err){
+      console.info('THEBASE lead (ошибка сети):', payload, err);
+>>>>>>> theirs
       if (status) status.textContent = 'Сбой сети. Попробуйте ещё раз.';
     }
   });
