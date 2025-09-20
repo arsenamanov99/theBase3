@@ -742,21 +742,15 @@
 
         const controls = document.createElement('div');
         controls.className = 'cart-item-qty';
-        controls.setAttribute('role', 'group');
-        controls.setAttribute('aria-label', `Количество ${baseLabel}`);
 
         const minusBtn = document.createElement('button');
         minusBtn.type = 'button';
         minusBtn.className = 'cart-qty-btn';
-        minusBtn.textContent = '−';
+        minusBtn.textContent = '-';
         minusBtn.setAttribute('aria-label', `Уменьшить количество ${baseLabel}`);
         minusBtn.disabled = qty <= 0;
         minusBtn.dataset.cartAction = 'decrement';
         minusBtn.dataset.cartKey = key;
-        minusBtn.addEventListener('click', (event) => {
-          event.preventDefault();
-          handleCartControl('decrement', key);
-        });
         const qtyValue = document.createElement('span');
         qtyValue.className = 'cart-qty-value';
         qtyValue.textContent = String(qty);
@@ -768,10 +762,6 @@
         plusBtn.setAttribute('aria-label', `Увеличить количество ${baseLabel}`);
         plusBtn.dataset.cartAction = 'increment';
         plusBtn.dataset.cartKey = key;
-        plusBtn.addEventListener('click', (event) => {
-          event.preventDefault();
-          handleCartControl('increment', key);
-        });
 
         controls.appendChild(minusBtn);
         controls.appendChild(qtyValue);
@@ -788,10 +778,6 @@
         removeBtn.setAttribute('aria-label', `Убрать ${baseLabel} из корзины`);
         removeBtn.dataset.cartAction = 'remove';
         removeBtn.dataset.cartKey = key;
-        removeBtn.addEventListener('click', (event) => {
-          event.preventDefault();
-          handleCartControl('remove', key);
-        });
 
         entry.appendChild(name);
         entry.appendChild(meta);
@@ -1055,7 +1041,24 @@
     }
   }
 
-  /* прямые обработчики навешиваются при отрисовке */
+  if (cartItemsEl) {
+    cartItemsEl.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+      const action = target.dataset.cartAction;
+      if (!action) {
+        return;
+      }
+      const key = target.dataset.cartKey;
+      if (!key) {
+        return;
+      }
+      event.preventDefault();
+      handleCartControl(action, key);
+    });
+  }
 
   if (cartToggle) {
     cartToggle.addEventListener('click', (event) => {
