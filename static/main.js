@@ -1,4 +1,4 @@
-﻿// ===== Анимация чашек (центр под словом "Бишкек") =====
+// ===== Анимация чашек (центр под словом "Бишкек") =====
 (() => {
   const lane = document.querySelector('.lane');
   const path = document.querySelector('.path');
