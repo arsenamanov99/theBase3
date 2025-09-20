@@ -251,6 +251,9 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -266,7 +269,10 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -288,11 +294,14 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 >>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
     const products = [...chosen];
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -324,6 +333,7 @@
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
       if (status) status.textContent = 'Готово. Мы свяжемся с вами.';
       form.reset();
       // очистить корзину
@@ -349,6 +359,11 @@
       [...chosen].forEach(n => markCard(n, false));
       chosen.clear(); renderChips();
     }catch{
+>>>>>>> theirs
+=======
+      finalizeSubmission();
+    }catch(err){
+      console.info('THEBASE lead (ошибка сети):', payload, err);
 >>>>>>> theirs
 =======
       finalizeSubmission();
