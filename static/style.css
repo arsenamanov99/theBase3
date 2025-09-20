@@ -1,15 +1,14 @@
-﻿:root{--bg-from:#662E1C;--bg-via:#C9A66B;--bg-to:#EBDCB2;--accent:#C9A66B;--accent-2:#EBDCB2;--cta:#AF4425;--ink:#1C1C1C;--focus:rgba(235,220,178,.35)}
+:root{--bg-from:#662E1C;--bg-via:#C9A66B;--bg-to:#EBDCB2;--accent:#C9A66B;--accent-2:#EBDCB2;--cta:#AF4425;--ink:#1C1C1C;--focus:rgba(235,220,178,.35)}
 *{box-sizing:border-box}
 html,body{height:100%}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--accent-2);background:linear-gradient(135deg,var(--bg-from),var(--bg-via),var(--bg-to)) fixed}
-body.no-scroll{overflow:hidden}
 .container{max-width:1120px;margin:0 auto;padding:0 20px}
 header{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);background:rgba(0,0,0,.18)}
 .bar{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
 .logo{font-weight:900;letter-spacing:.25em;color:var(--cta);position:relative;left:20px}
-
-
+nav a{margin-left:20px;color:var(--accent-2);font-weight:700;text-decoration:none}
+nav a:hover{color:#fff}
 
 /* HERO */
 
@@ -21,7 +20,7 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);background:rgb
 .lane{
   margin-top:22px;position:relative;min-height:120px;
   display:flex;justify-content:space-between;align-items:center;
-  gap: 24px;flex-wrap:nowrap; /* РІР°Р¶РЅРѕ */
+  gap: 24px;flex-wrap:nowrap; /* важно */
 }
 .city{font-weight:900;font-size:28px;color:var(--accent-2);white-space:nowrap}
 .path{position:absolute;height:40px;left:0;top:0;width:0;pointer-events:none}
@@ -73,16 +72,16 @@ header{position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);background:rgb
 .input:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--focus)}
 .btn{margin-top:14px;display:block;width:100%;border:none;border-radius:14px;padding:12px 18px;font-weight:900;background:linear-gradient(#C9A66B,#EBDCB2);color:#111;cursor:pointer}
 footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:center;color:var(--accent-2);font-size:12px}
-/* РїРѕРґРЅСЏС‚СЊ С„РѕСЂРјСѓ Р·Р°СЏРІРєРё РІС‹С€Рµ */
-#contact.section{padding-top:0px;}      /* Р±С‹Р»Рѕ 56px */
+/* поднять форму заявки выше */
+#contact.section{padding-top:0px;}      /* было 56px */
 
-/* Р’С‹СЂРѕРІРЅСЏС‚СЊ С„РѕСЂРјСѓ СЃРЅРёР·Сѓ РїРѕ С†РµРЅС‚СЂСѓ */
+/* Выровнять форму снизу по центру */
 #contact .container{min-height:70vh;display:grid;align-content:end;justify-items:center}
 #contact .form{margin:0 auto 12px}
 
-.city .city-txt-bishkek{display:inline-block; transform:translateX( 200px);} /* РїРѕРґР±РµСЂРё РїРёРєСЃРµР»Рё */
+.city .city-txt-bishkek{display:inline-block; transform:translateX( 200px);} /* подбери пиксели */
 
-/* HERO: РїРѕРґР¶Р°С‚СЊ С‚РµРєСЃС‚ РІРїСЂР°РІРѕ Рё СѓРІРµР»РёС‡РёС‚СЊ РєР°СЂС‚РёРЅРєСѓ */
+/* HERO: поджать текст вправо и увеличить картинку */
 .hero-inner{grid-template-columns:1.1fr 0.9fr;}
 .hero-inner > div:first-child{margin-left:40px; max-width:620px;}
 .hero .lane{width:68%;}
@@ -94,23 +93,24 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
   .hero .lane{width:100%;}
   .hero-image img{width:min(92vw,720px);}
 }
-/* СЃРµР»РµРєС‚С‹ С‚РѕРІР°СЂРѕРІ Рё РєРЅРѕРїРєР° "РµС‰С‘" */
+/* селекты товаров и кнопка "ещё" */
 .stack{display:grid;gap:8px}
 .select{appearance:none}
 .btn-light{margin-top:8px;display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.22);background:transparent;color:var(--accent-2);padding:8px 12px;border-radius:10px;cursor:pointer}
 .btn-light:hover{background:rgba(255,255,255,.08)}
 
-/* РїРѕРґСЃРІРµС‚РєР° РєР°СЂС‚РѕС‡РєРё РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё */
+/* подсветка карточки при добавлении */
 .card.added{box-shadow:0 0 0 3px rgba(175,68,37,.35), 0 14px 34px rgba(0,0,0,.34); transform:translateY(-1px)}
 .card.added{transition:transform .2s ease}
 
-/* РІСЃРїР»С‹РІР°С€РєР° */
+/* всплывашка */
 .toast{position:fixed;left:50%;top:16px;transform:translateX(-50%) scale(.96);background:#111;color:#fff;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);opacity:0;pointer-events:none;transition:.18s ease}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
-/* С‡РёРїС‹ РІС‹Р±СЂР°РЅРЅС‹С… С‚РѕРІР°СЂРѕРІ */
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+/* чипы выбранных товаров */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border-radius:999px;
       background:rgba(235,220,178,.18);border:1px solid rgba(255,255,255,.18);color:var(--accent-2);font-weight:700}
+<<<<<<< ours
 .chip-x{all:unset;cursor:pointer;padding:0 6px;border-radius:50%;line-height:1}
 .chip-x:hover{background:rgba(255,255,255,.12)}
 
@@ -351,3 +351,19 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
 }
 .btn-in-cart{pointer-events:none;opacity:.95}
 .btn-in-cart .checkmark{display:inline-block;margin-left:8px;font-weight:700}
+=======
+.chip-title{font-weight:800}
+.chip-controls{display:inline-flex;align-items:center;gap:6px}
+.chip-qty-btn{all:unset;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
+             border:1px solid rgba(255,255,255,.22);color:var(--accent-2);font-weight:700;cursor:pointer}
+.chip-qty-btn:hover{background:rgba(255,255,255,.12)}
+.chip-qty-btn:disabled{opacity:.45;cursor:default;background:transparent}
+.chip-qty-value{min-width:24px;text-align:center;font-weight:800}
+.chip-remove{all:unset;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
+             border:1px solid rgba(255,255,255,.22);color:var(--accent-2);cursor:pointer}
+.chip-remove:hover{background:rgba(255,255,255,.12);color:#fff}
+.chip-remove span{pointer-events:none}
+
+/* состояние кнопки карточки «уже в корзине» */
+.card .cta.in-cart{background:#6b7280;cursor:default;pointer-events:none}
+>>>>>>> theirs
