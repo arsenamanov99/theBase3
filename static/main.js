@@ -159,6 +159,7 @@
       btn.textContent = quantity > 1 ? `В корзине — ${quantity} шт.` : 'Уже в корзине';
     } else {
 <<<<<<< ours
+<<<<<<< ours
       cart.forEach((item, key) => {
         const qty = Number(item.quantity || 0);
         const baseLabel = item.flavors.length ? `${item.name} (${item.flavors.join(', ')})` : item.name;
@@ -277,6 +278,11 @@
         cartForm.setAttribute('hidden', 'hidden');
         resetCheckoutForm(true);
       }
+=======
+      btn.classList.remove('in-cart');
+      btn.removeAttribute('aria-disabled');
+      btn.textContent = 'Заказать бесплатный образец';
+>>>>>>> theirs
 =======
       btn.classList.remove('in-cart');
       btn.removeAttribute('aria-disabled');

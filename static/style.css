@@ -111,6 +111,7 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
 .chip{display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border-radius:999px;
       background:rgba(235,220,178,.18);border:1px solid rgba(255,255,255,.18);color:var(--accent-2);font-weight:700}
 <<<<<<< ours
+<<<<<<< ours
 .chip-x{all:unset;cursor:pointer;padding:0 6px;border-radius:50%;line-height:1}
 .chip-x:hover{background:rgba(255,255,255,.12)}
 
@@ -352,6 +353,8 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
 .btn-in-cart{pointer-events:none;opacity:.95}
 .btn-in-cart .checkmark{display:inline-block;margin-left:8px;font-weight:700}
 =======
+=======
+>>>>>>> theirs
 .chip-title{font-weight:800}
 .chip-controls{display:inline-flex;align-items:center;gap:6px}
 .chip-qty-btn{all:unset;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
@@ -366,4 +369,7 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
 
 /* состояние кнопки карточки «уже в корзине» */
 .card .cta.in-cart{background:#6b7280;cursor:default;pointer-events:none}
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
