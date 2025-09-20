@@ -107,20 +107,11 @@ footer{padding:22px 0;border-top:1px solid rgba(255,255,255,.12);text-align:cent
 .toast{position:fixed;left:50%;top:16px;transform:translateX(-50%) scale(.96);background:#111;color:#fff;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);opacity:0;pointer-events:none;transition:.18s ease}
 .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
 /* чипы выбранных товаров */
-.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-.chip{display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border-radius:999px;
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
       background:rgba(235,220,178,.18);border:1px solid rgba(255,255,255,.18);color:var(--accent-2);font-weight:700}
-.chip-title{font-weight:800}
-.chip-controls{display:inline-flex;align-items:center;gap:6px}
-.chip-qty-btn{all:unset;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
-             border:1px solid rgba(255,255,255,.22);color:var(--accent-2);font-weight:700;cursor:pointer}
-.chip-qty-btn:hover{background:rgba(255,255,255,.12)}
-.chip-qty-btn:disabled{opacity:.45;cursor:default;background:transparent}
-.chip-qty-value{min-width:24px;text-align:center;font-weight:800}
-.chip-remove{all:unset;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;
-             border:1px solid rgba(255,255,255,.22);color:var(--accent-2);cursor:pointer}
-.chip-remove:hover{background:rgba(255,255,255,.12);color:#fff}
-.chip-remove span{pointer-events:none}
+.chip-x{all:unset;cursor:pointer;padding:0 6px;border-radius:50%;line-height:1}
+.chip-x:hover{background:rgba(255,255,255,.12)}
 
 /* состояние кнопки карточки «уже в корзине» */
 .card .cta.in-cart{background:#6b7280;cursor:default;pointer-events:none}
